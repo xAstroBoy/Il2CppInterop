@@ -59,9 +59,13 @@ public class RegisterTypeOptions
 {
     public static readonly RegisterTypeOptions Default = new();
 
-    public bool LogSuccess { get; init; } = true;
-    public Func<Type, Type[]>? InterfacesResolver { get; init; } = null;
-    public Il2CppInterfaceCollection? Interfaces { get; init; } = null;
+    // NOTE: these use 'set' rather than 'init' on purpose. 'init' accessors emit the setter with an
+    // IsExternalInit modreq on the return type, which MonoMod's MonoRuntime method resolution (used
+    // by Harmony on the il2cpp/net8 runtime) fails to match -> "Method not found: set_LogSuccess",
+    // aborting Il2CppInteropFixes and leaving the interop hooks half-applied (game hangs on load).
+    public bool LogSuccess { get; set; } = true;
+    public Func<Type, Type[]>? InterfacesResolver { get; set; } = null;
+    public Il2CppInterfaceCollection? Interfaces { get; set; } = null;
 }
 
 public static unsafe partial class ClassInjector
